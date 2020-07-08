@@ -5,6 +5,9 @@ from rest_framework.routers import SimpleRouter, Route
 
 from openipam.api import views
 
+# TODO: Remove this import
+from openipam.api import urls_singular
+
 app_name = "api"
 
 
@@ -53,17 +56,17 @@ class OPENIPAMAPIRouter(SimpleRouter):
 
 
 router = OPENIPAMAPIRouter()
-router.register(r"dhcpgroups?", views.network.DhcpGroupViewSet)
-router.register(r"dhcpoptions?", views.network.DhcpOptionViewSet)
-router.register(r"dhcpoptiontodhcpgroups?", views.network.DhcpOptionToDhcpGroupViewSet)
-router.register(r"sharednetworks?", views.network.SharedNetworkViewSet)
-router.register(r"networkranges?", views.network.NetworkRangeViewSet)
-router.register(r"networks?tovlans?", views.network.NetworkToVlanViewSet)
-router.register(r"pools?", views.network.PoolViewSet)
-router.register(r"defaultpools?", views.network.DefaultPoolViewSet)
-router.register(r"vlans?", views.network.VlanViewSet)
-router.register(r"buildings?", views.network.BuildingViewSet)
-router.register(r"buildings?tovlans?", views.network.BuildingToVlanViewSet)
+router.register(r"dhcpgroups", views.network.DhcpGroupViewSet)
+router.register(r"dhcpoptions", views.network.DhcpOptionViewSet)
+router.register(r"dhcpoptiontodhcpgroups", views.network.DhcpOptionToDhcpGroupViewSet)
+router.register(r"sharednetworks", views.network.SharedNetworkViewSet)
+router.register(r"networkranges", views.network.NetworkRangeViewSet)
+router.register(r"networkstovlans", views.network.NetworkToVlanViewSet)
+router.register(r"pools", views.network.PoolViewSet)
+router.register(r"defaultpools", views.network.DefaultPoolViewSet)
+router.register(r"vlans", views.network.VlanViewSet)
+router.register(r"buildings", views.network.BuildingViewSet)
+router.register(r"buildingstovlans", views.network.BuildingToVlanViewSet)
 
 urlpatterns = [
     path("", include(router.urls)),
@@ -125,114 +128,114 @@ urlpatterns = [
         name="api_reports_dashboard",
     ),
     # Users
-    re_path(r"^users?/$", views.users.UserList.as_view(), name="api_users_list"),
+    re_path(r"^users/$", views.users.UserList.as_view(), name="api_users_list"),
     # Groups
-    re_path(r"^groups?/$", views.users.GroupList.as_view(), name="api_groups_list"),
+    re_path(r"^groups/$", views.users.GroupList.as_view(), name="api_groups_list"),
     re_path(
-        r"^groups?/options/$",
+        r"^groups/options/$",
         views.users.GroupOptionsList.as_view(),
         name="api_groupsoptions_list",
     ),
     # Attributes
     re_path(
-        r"^attributes?/$", views.hosts.AttributeList.as_view(), name="api_attributes"
+        r"^attributes/$", views.hosts.AttributeList.as_view(), name="api_attributes"
     ),
     re_path(
-        r"^attributes?/structured/values/$",
+        r"^attributes/structured/values/$",
         views.hosts.StructuredAttributeValueList.as_view(),
         name="api_attributes_structured_values",
     ),
     # Hosts
     re_path(
-        r"^hosts?/mac/next/$",
+        r"^hosts/mac/next/$",
         views.hosts.HostNextMac.as_view(),
         name="api_host_mac_next",
     ),
-    re_path(r"^hosts?/mac/$", views.hosts.HostMac.as_view(), name="api_host_mac"),
+    re_path(r"^hosts/mac/$", views.hosts.HostMac.as_view(), name="api_host_mac"),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/add/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/add/$",
         views.hosts.HostAddAttribute.as_view(),
         name="api_host_attribute_add",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/delete/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/delete/$",
         views.hosts.HostDeleteAttribute.as_view(),
         name="api_host_attribute_delete",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/attributes/$",
         views.hosts.HostAttributeList.as_view(),
         name="api_host_attribute_list",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/add/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/add/$",
         views.hosts.HostOwnerAdd.as_view(),
         name="api_host_owners_delete",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/delete/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/delete/$",
         views.hosts.HostOwnerDelete.as_view(),
         name="api_host_owners_add",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/owners/$",
         views.hosts.HostOwnerList.as_view(),
         name="api_host_owners_list",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/renew/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/renew/$",
         views.hosts.HostRenew.as_view(),
         name="api_host_renew",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/update/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/update/$",
         views.hosts.HostUpdate.as_view(),
         name="api_host_update",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/delete/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/delete/$",
         views.hosts.HostDelete.as_view(),
         name="api_host_delete",
     ),
     re_path(
-        r"^hosts?/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/$",
+        r"^hosts/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/$",
         views.hosts.HostDetail.as_view(),
         name="api_host_view",
     ),
-    re_path(r"^hosts?/add/$", views.hosts.HostCreate.as_view(), name="api_host_add"),
+    re_path(r"^hosts/add/$", views.hosts.HostCreate.as_view(), name="api_host_add"),
     re_path(
-        r"^hosts?/disabled/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/delete/$",
+        r"^hosts/disabled/(?P<pk>([0-9a-fA-F]{2}[:-]?){5}[0-9a-fA-F]{2})/delete/$",
         views.hosts.DisabledHostDelete.as_view(),
         name="api_disabled_hosts_delete",
     ),
     re_path(
-        r"^hosts?/disabled/add/$",
+        r"^hosts/disabled/add/$",
         views.hosts.DisabledHostCreate.as_view(),
         name="api_disabled_hosts_add",
     ),
     re_path(
-        r"^hosts?/disabled/$",
+        r"^hosts/disabled/$",
         views.hosts.DisabledHostList.as_view(),
         name="api_disabled_hosts_list",
     ),
-    re_path(r"^hosts?/$", views.hosts.HostList.as_view(), name="api_host_list"),
+    re_path(r"^hosts/$", views.hosts.HostList.as_view(), name="api_host_list"),
     re_path(
-        r"^guests?/register/$",
+        r"^guests/register/$",
         views.guests.GuestRegister.as_view(),
         name="api_guest_register",
     ),
     re_path(
-        r"^guests?/tickets/add/$",
+        r"^guests/tickets/add/$",
         views.guests.GuestTicketCreate.as_view(),
         name="api_guest_create",
     ),
     re_path(
-        r"^guests?/tickets/$",
+        r"^guests/tickets/$",
         views.guests.GuestTicketList.as_view(),
         name="api_guest_list",
     ),
     re_path(
-        r"^guests?/tickets/(?P<ticket>\w+)/$",
+        r"^guests/tickets/(?P<ticket>\w+)/$",
         views.guests.GuestTicketDelete.as_view(),
         name="api_guest_delete",
     ),
@@ -240,47 +243,47 @@ urlpatterns = [
     path("dns/<int:pk>/", views.dns.DnsDetail.as_view(), name="api_dns_view"),
     path("dns/add/", views.dns.DnsCreate.as_view(), name="api_dns_add"),
     path("dns/", views.dns.DnsList.as_view(), name="api_dns_list"),
-    re_path(r"^domains?/$", views.dns.DomainList.as_view(), name="api_domain_list"),
+    re_path(r"^domains/$", views.dns.DomainList.as_view(), name="api_domain_list"),
     re_path(
-        r"^domains?/name/$",
+        r"^domains/name/$",
         views.dns.DomainNameList.as_view(),
         name="api_domain_name_list",
     ),
     re_path(
-        r"^networks?/$", views.network.NetworkList.as_view(), name="api_network_list"
+        r"^networks/$", views.network.NetworkList.as_view(), name="api_network_list"
     ),
     re_path(
-        r"^networks?/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,2}))/$",
+        r"^networks/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,2}))/$",
         views.network.NetworkDetail.as_view(),
         name="api_network_detail",
     ),
     re_path(
-        r"^networks?/add/$",
+        r"^networks/add/$",
         views.network.NetworkCreate.as_view(),
         name="api_network_create",
     ),
     re_path(
-        r"^networks?/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,3}))/update/$",
+        r"^networks/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,3}))/update/$",
         views.network.NetworkUpdate.as_view(),
         name="api_network_update",
     ),
     re_path(
-        r"^networks?/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,3}))/delete/$",
+        r"^networks/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}\/\d{0,3}))/delete/$",
         views.network.NetworkDelete.as_view(),
         name="api_network_delete",
     ),
     re_path(
-        r"^address(es)?/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}))/$",
+        r"^addresses/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}))/$",
         views.network.AddressDetail.as_view(),
         name="api_address_view",
     ),
     re_path(
-        r"^address(es)?/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}))/update/$",
+        r"^addresses/(?P<pk>(\d{0,3}\.\d{0,3}\.\d{0,3}\.\d{0,3}))/update/$",
         views.network.AddressUpdate.as_view(),
         name="api_address_update",
     ),
     re_path(
-        r"^address(es)?/$", views.network.AddressList.as_view(), name="api_address_list"
+        r"^addresses/$", views.network.AddressList.as_view(), name="api_address_list"
     ),
     path(
         "base/overview/",
@@ -292,4 +295,7 @@ urlpatterns = [
     ),
     path("login/jwt_token/", views.base.obtain_jwt_token),
     path("", include("rest_framework.urls", namespace="rest_framework")),
-]
+
+    # TODO: Delete when removing singular instances of urls
+    path("", include("openipam.api.urls_singular.py")),
+] + urls_singular
