@@ -19,6 +19,7 @@ from openipam.api.serializers.dns import (
     DnsCreateSerializer,
     DnsDeleteSerializer,
 )
+from openipam.api.singular_url_logger import singular_url_logger
 
 
 class DomainNameList(generics.ListAPIView):
@@ -30,6 +31,10 @@ class DomainNameList(generics.ListAPIView):
     filter_class = DomainFilter
     pagination_class = APIPagination
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(DomainNameList, self).get(request, *args, **kwargs)    
+
 
 class DomainList(generics.ListAPIView):
     queryset = Domain.objects.select_related().all()
@@ -37,6 +42,10 @@ class DomainList(generics.ListAPIView):
     filter_fields = ("name", "username")
     filter_class = DomainFilter
     pagination_class = APIPagination
+
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(DomainList, self).get(request, *args, **kwargs)    
 
 
 class DnsList(generics.ListAPIView):

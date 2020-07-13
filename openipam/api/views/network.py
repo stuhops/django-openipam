@@ -30,6 +30,7 @@ from openipam.api.views.base import APIPagination
 from openipam.api.serializers import network as network_serializers
 from openipam.api.filters.network import NetworkFilter, AddressFilter
 from openipam.api.permissions import IPAMAPIAdminPermission
+from openipam.api.singular_url_logger import singular_url_logger
 
 from ipaddress import IPv4Network
 
@@ -220,6 +221,10 @@ class NetworkList(generics.ListAPIView):
     filterset_fields = ("network", "name")
     filter_class = NetworkFilter
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(NetworkList, self).get(request, *args, **kwargs)    
+
     def filter_queryset(self, queryset):
         try:
             return super(NetworkList, self).filter_queryset(queryset)
@@ -232,11 +237,23 @@ class NetworkDetail(generics.RetrieveAPIView):
     queryset = Network.objects.all()
     serializer_class = network_serializers.NetworkListSerializer
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(NetworkDetail, self).get(request, *args, **kwargs)    
+
 
 class NetworkCreate(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, IPAMAPIAdminPermission)
     serializer_class = network_serializers.NetworkCreateUpdateSerializer
     queryset = Network.objects.all()
+
+    def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(NetworkCreate, self).post(request, *args, **kwargs)    
+
+    def create(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(NetworkCreate, self).create(request, *args, **kwargs)    
 
 
 class NetworkUpdate(generics.RetrieveUpdateAPIView):
@@ -248,6 +265,7 @@ class NetworkUpdate(generics.RetrieveUpdateAPIView):
         return self.update(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
+        singular_url_logger(request)
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -274,6 +292,7 @@ class NetworkDelete(generics.RetrieveDestroyAPIView):
     queryset = Network.objects.all()
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.destroy(request, *args, **kwargs)
 
 
@@ -308,6 +327,10 @@ class AddressList(generics.ListAPIView):
     filterset_fields = ("address", "mac")
     filterset_class = AddressFilter
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(AddressList, self).get(request, *args, **kwargs)    
+
 
 class AddressDetail(generics.RetrieveAPIView):
     """
@@ -316,6 +339,10 @@ class AddressDetail(generics.RetrieveAPIView):
 
     queryset = Address.objects.select_related("network").all()
     serializer_class = network_serializers.AddressSerializer
+
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(AddressDetail, self).get(request, *args, **kwargs)    
 
 
 class AddressUpdate(generics.RetrieveUpdateAPIView):
@@ -327,6 +354,7 @@ class AddressUpdate(generics.RetrieveUpdateAPIView):
         return self.update(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
+        singular_url_logger(request)
         # partial = kwargs.pop('partial', False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)

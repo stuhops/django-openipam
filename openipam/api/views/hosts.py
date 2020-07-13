@@ -28,6 +28,7 @@ from openipam.api.views.base import APIPagination, APIMaxPagination
 from openipam.api.serializers import hosts as host_serializers
 from openipam.api.filters.hosts import HostFilter
 from openipam.api.permissions import IPAMChangeHostPermission, IPAMAPIAdminPermission
+from openipam.api.singular_url_logger import singular_url_logger
 
 from guardian.shortcuts import assign_perm, remove_perm
 
@@ -80,6 +81,10 @@ class HostList(generics.ListAPIView):
     ordering_fields = ("expires", "changed")
     ordering = ("expires",)
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(HostList, self).get(request, *args, **kwargs)
+
     # def get_paginate_by(self, queryset=None):
     #     param = self.request.QUERY_PARAMS.get(self.paginate_by_param)
     #     if param and param == '0':
@@ -92,6 +97,7 @@ class HostMac(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         ip_address = request.GET.get("ip_address")
         leased_ip = request.GET.get("leased_ip")
         registered_ip = request.GET.get("registered_ip")
@@ -121,6 +127,7 @@ class HostNextMac(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         vendor = request.GET.get("vendor")
 
         if vendor:
@@ -138,6 +145,10 @@ class HostDetail(generics.RetrieveAPIView):
     queryset = Host.objects.prefetch_related("addresses", "leases").all()
     permission_classes = (IsAuthenticated,)
     serializer_class = host_serializers.HostDetailSerializer
+
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(HostDetail, self).get(request, *args, **kwargs)
 
 
 class HostCreate(generics.CreateAPIView):
@@ -171,6 +182,7 @@ class HostCreate(generics.CreateAPIView):
     model = Host
 
     def create(self, request, *args, **kwargs):
+        singular_url_logger(request)
         try:
             response = super(HostCreate, self).create(request, *args, **kwargs)
             return response
@@ -221,9 +233,11 @@ class HostUpdate(generics.RetrieveUpdateAPIView):
     queryset = Host.objects.all()
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.update(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
+        singular_url_logger(request)
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
@@ -250,6 +264,7 @@ class HostRenew(generics.RetrieveUpdateAPIView):
     queryset = Host.objects.all()
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.update(request, *args, **kwargs)
 
 
@@ -265,6 +280,7 @@ class HostDelete(generics.DestroyAPIView):
     queryset = Host.objects.all()
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.destroy(request, *args, **kwargs)
 
     def post_delete(self, obj):
@@ -279,6 +295,10 @@ class HostDelete(generics.DestroyAPIView):
 class HostOwnerList(generics.RetrieveAPIView):
     serializer_class = host_serializers.HostOwnerSerializer
     queryset = Host.objects.all()
+
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(HostOwnerList, self).get(request, *args, **kwargs)
 
 
 class HostOwnerAdd(APIView):
@@ -301,6 +321,7 @@ class HostOwnerAdd(APIView):
     permission_classes = (IsAuthenticated, IPAMChangeHostPermission)
 
     def post(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         host = get_object_or_404(Host, pk=kwargs["pk"])
         serializer = host_serializers.HostOwnerSerializer(data=request.data)
 
@@ -348,6 +369,7 @@ class HostOwnerDelete(APIView):
     permission_classes = (IsAuthenticated, IPAMChangeHostPermission)
 
     def post(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         host = get_object_or_404(Host, pk=kwargs["pk"])
         serializer = host_serializers.HostOwnerSerializer(data=request.data)
         if serializer.is_valid():
@@ -379,6 +401,7 @@ class AttributeList(generics.ListAPIView):
     queryset = Attribute.objects.select_related().all()
 
     def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.list(request, *args, **kwargs)
 
 
@@ -388,6 +411,10 @@ class StructuredAttributeValueList(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("attribute__name", "value", "attribute")
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(StructuredAttributeValueList, self).get(request, *args, **kwargs)
+
 
 class HostAttributeList(APIView):
     """
@@ -395,6 +422,7 @@ class HostAttributeList(APIView):
     """
 
     def get(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         attributes = {}
         host = get_object_or_404(Host, pk=kwargs["pk"])
         structured_attrs = StructuredAttributeToHost.objects.select_related(
@@ -435,6 +463,7 @@ class HostAddAttribute(APIView):
     permission_classes = (IsAuthenticated, IPAMChangeHostPermission)
 
     def post(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         host = get_object_or_404(Host, pk=kwargs["pk"])
         serializer = host_serializers.HostUpdateAttributeSerializer(data=request.data)
         if serializer.is_valid():
@@ -497,6 +526,7 @@ class HostDeleteAttribute(APIView):
     permission_classes = (IsAuthenticated, IPAMChangeHostPermission)
 
     def post(self, request, format=None, **kwargs):
+        singular_url_logger(request)
         host = get_object_or_404(Host, pk=kwargs["pk"])
         serializer = host_serializers.HostDeleteAttributeSerializer(data=request.data)
 
@@ -537,11 +567,23 @@ class DisabledHostList(generics.ListCreateAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("changed_by__username",)
 
+    def get(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(DisabledHostList, self).get(request, *args, **kwargs)
+
 
 class DisabledHostCreate(generics.CreateAPIView):
     permission_classes = (IsAuthenticated, IPAMAPIAdminPermission)
     queryset = Disabled.objects.select_related("changed_by").all()
     serializer_class = host_serializers.DisabledHostListUpdateSerializer
+
+    def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(DisabledHostCreate, self).post(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(DisabledHostCreate, self).create(request, *args, **kwargs)
 
 
 class DisabledHostDelete(generics.DestroyAPIView):
@@ -550,4 +592,5 @@ class DisabledHostDelete(generics.DestroyAPIView):
     serializer_class = host_serializers.DisabledHostDeleteSerializer
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.destroy(request, *args, **kwargs)

@@ -16,6 +16,7 @@ from openipam.api.serializers.guests import (
 )
 from openipam.api.filters.guests import GuestTicketFilter
 from openipam.api.permissions import IPAMGuestEnablePermission
+from openipam.api.singular_url_logger import singular_url_logger
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -32,6 +33,7 @@ class GuestTicketList(generics.ListAPIView):
     pagination_class = APIMaxPagination
 
     def list(self, request, *args, **kwargs):
+        singular_url_logger(request)
         if not request.user.is_ipamadmin:
             self.queryset = GuestTicket.objects.filter(user=request.user)
         return super(GuestTicketList, self).list(request, *args, **kwargs)
@@ -50,6 +52,14 @@ class GuestTicketCreate(generics.CreateAPIView):
     filter_class = GuestTicketFilter
     serializer_class = GuestTicketListCreateSerializer
 
+    def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(GuestTicketCreate, self).post(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        singular_url_logger(request)
+        return super(GuestTicketCreate, self).create(request, *args, **kwargs)
+
 
 class GuestTicketDelete(generics.RetrieveDestroyAPIView):
     permission_classes = (IsAuthenticated, IPAMGuestEnablePermission)
@@ -58,6 +68,7 @@ class GuestTicketDelete(generics.RetrieveDestroyAPIView):
     lookup_field = "ticket"
 
     def post(self, request, *args, **kwargs):
+        singular_url_logger(request)
         return self.destroy(request, *args, **kwargs)
 
 
@@ -65,6 +76,7 @@ class GuestRegister(APIView):
     permission_classes = (AllowAny, IPAMGuestEnablePermission)
 
     def post(self, request, format=None, **kwargs):
+        singular_url_logger(request)        
         serializer = GuestRegisterSerializer(data=request.data)
 
         if serializer.is_valid():
