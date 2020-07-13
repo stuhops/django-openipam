@@ -10,6 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from openipam.api.permissions import IPAMAPIAdminPermission
 from openipam.api.serializers.users import UserSerializer, GroupSerializer
+from openipam.api.singular_url_logger import singular_url_logger
 
 User = get_user_model()
 
@@ -21,6 +22,10 @@ class UserList(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("groups__name", "username", "email")
 
+    def get(self, request, format=None):
+        singular_url_logger(request)
+        return super().get(request, format)
+
 
 class GroupList(generics.ListAPIView):
     queryset = Group.objects.all()
@@ -29,11 +34,16 @@ class GroupList(generics.ListAPIView):
     filter_backends = (DjangoFilterBackend,)
     filter_fields = ("name",)
 
+    def get(self, request, format=None):
+        singular_url_logger(request)
+        return super().get(request, format)
+
 
 class GroupOptionsList(APIView):
     permission_classes = (permissions.IsAuthenticated, IPAMAPIAdminPermission)
 
     def get(self, request, format=None):
+        singular_url_logger(request)
         name = request.GET.get("term")
         if name:
             queryset = Group.objects.filter(name__istartswith=name)

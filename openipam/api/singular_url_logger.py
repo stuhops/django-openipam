@@ -9,7 +9,7 @@ def is_singular_url(request):
     return re.search("singular$", url_name)
 
 
-def singular_url_logger(request, requesting):
+def singular_url_logger(request):
     if is_singular_url(request):
         pass
         # TODO: Create a logger
@@ -19,9 +19,10 @@ def singular_url_logger(request, requesting):
             f"The requested url {request.build_absolute_uri()} contains an depreciated"
             " style using singular notation. Please make requests using plural notation"
             " such as group -> groups and option -> options. Beginning in the next major"
-            " release singular notation will no longer be accepted."
+            " release, singular notation will no longer be accepted.",
         )
     return
+
 
 # Api hits a singular url
 # Requests normal view
